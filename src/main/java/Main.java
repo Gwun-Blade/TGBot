@@ -7,6 +7,7 @@ public class Main {
         TelegramBotsApi botApi = new TelegramBotsApi(DefaultBotSession.class);
         Bot bot = new Bot();
         botApi.registerBot(bot);
+        //bot.sendPhoto(1144830564l);
         //bot.sendText(1144830564l, "Hello world");
     }
 }
