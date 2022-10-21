@@ -1,3 +1,6 @@
+package core;
+
+import Viev.MyMessage;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -10,6 +13,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class Bot extends TelegramLongPollingBot {
     MyMessage startMessage;
@@ -82,8 +86,11 @@ public class Bot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         Long userId;
         if (update.hasMessage()) {
+            Main.log(Level.INFO, "Получено сообщение от: " + update.getMessage().getFrom() +
+                    " " + update.getMessage().getFrom().getFirstName());
             userId = update.getMessage().getFrom().getId();
             if (update.getMessage().hasText()) {
+                Main.log(Level.INFO, "Сообщение содержит текст: " + update.getMessage().getText());
                 if (update.getMessage().getText().equalsIgnoreCase("/start")) {
                     sendMessage(userId, startMessage);
                 } else {
@@ -91,10 +98,14 @@ public class Bot extends TelegramLongPollingBot {
                 }
             }
             if (update.getMessage().hasPhoto()) {
+                Main.log(Level.INFO, "Сообщение содержит фото + " + update.getMessage().getPhoto());
                 sendMessage(userId, new MyMessage("Заглушка от фото"));
-                System.out.println(update.getMessage().getPhoto());
             }
         } else if (update.hasCallbackQuery()) {
+            Main.log(Level.INFO, "Кнопка нажата, нажавший: " + update.getMessage().getFrom().getId() +
+                    " " + update.getMessage().getFrom().getFirstName());
+            Main.log(Level.INFO, "Данные кнопки: + " + update.getCallbackQuery().getId() + " "
+                    +  update.getCallbackQuery().getData());
             userId = update.getCallbackQuery().getFrom().getId();
             if (update.getCallbackQuery().getData().equalsIgnoreCase("START_MAIN")) {
                 sendMessage(userId, testScript.get(0));
@@ -103,6 +114,7 @@ public class Bot extends TelegramLongPollingBot {
                     int index = Integer.parseInt(update.getCallbackQuery().getData()) - 1;
                     sendMessage(userId, testScript.get(index));
                 } catch (NumberFormatException ex) {
+                    Main.log(Level.WARNING, ex.getMessage());
                     throw new RuntimeException(ex);
                 }
             }
@@ -111,6 +123,7 @@ public class Bot extends TelegramLongPollingBot {
             try {
                 execute(close);
             } catch (Exception e) {
+                Main.log(Level.WARNING, e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -124,6 +137,7 @@ public class Bot extends TelegramLongPollingBot {
             try {
                 execute(sendPhoto);
             } catch (TelegramApiException ex) {
+                Main.log(Level.WARNING, ex.getMessage());
                 throw new RuntimeException(ex);
             }
         }
@@ -134,6 +148,7 @@ public class Bot extends TelegramLongPollingBot {
             try {
                 execute(sendMessage);
             } catch (TelegramApiException ex) {
+                Main.log(Level.WARNING, ex.getMessage());
                 throw new RuntimeException(ex);
             }
         }
