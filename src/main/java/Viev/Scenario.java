@@ -9,10 +9,19 @@ public class Scenario {
 
     public Scenario(int id, List<MyBlock> blocks, SubTypes type) {
         this.id = id;
-        this.blocks = blocks;
+        this.blocks = blocks; //пероверку на уникальность id блоков
         this.type = type;
     }
 
+    public MyBlock getBlockWithId(int id) throws ScenarioException {
+        for (MyBlock block :
+                blocks) {
+            if (block.getId() == id) {
+                return block;
+            }
+        }
+        throw new ScenarioException();
+    }
     public String getSQLToWriteIt() {
         return "Insert into 'Scenaries' values('" + id + "', '" + this.toString() + "', '" + type.toString() + "')";
     }

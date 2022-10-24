@@ -7,6 +7,9 @@ public class MyPhoto {
         photoId = id;
     }
 
+    public String getString() {
+        return photoId;
+    }
     @Override
     public String toString() {
         return "<photo>" + photoId + "</photo>";

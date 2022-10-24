@@ -8,7 +8,7 @@ import java.util.List;
 public class MyMessage {
     private Long id;
     private String text;
-    private String photo;
+    private List<String> photos;
     private InlineKeyboardMarkup keyboard;
 
     public Long getId() {
@@ -26,16 +26,16 @@ public class MyMessage {
         return this.text != null && !this.text.isEmpty();
     }
 
-    public String getPhoto() {
-        return photo;
+    public List<String> getPhoto() {
+        return photos;
     }
 
-    public void setPhoto(String photo) {
-        this.photo = photo;
+    public void setPhoto(List<String> photos) {
+        this.photos = photos;
     }
 
     public boolean hasPhoto() {
-        return photo != null;
+        return photos != null && !photos.isEmpty();
     }
 
     public InlineKeyboardMarkup getKeyboard() {
@@ -54,17 +54,17 @@ public class MyMessage {
         return keyboard != null && !keyboard.getKeyboard().isEmpty();
     }
 
-    public MyMessage (String text, String photo, InlineKeyboardMarkup keyboard) {
+    public MyMessage (String text, List<String> photos, InlineKeyboardMarkup keyboard) {
         this.text = text;
-        this.photo = photo;
+        this.photos = photos;
         this.keyboard = keyboard;
     }
 
     public MyMessage (String text, InlineKeyboardMarkup keyboard) {
         this(text, null, keyboard);
     }
-    public MyMessage (String text, String photo) {
-        this(text, photo, null);
+    public MyMessage (String text, List<String> photos) {
+        this(text, photos, null);
     }
     public MyMessage (String text) {
         this(text, null, null);

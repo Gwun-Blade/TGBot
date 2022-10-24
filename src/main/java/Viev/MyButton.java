@@ -1,16 +1,18 @@
 package Viev;
 
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+
 public class MyButton {
     private String text;
-    private String data;
+    private String link;
 
-    public MyButton(String text, String data) {
+    public MyButton(String text, String link) {
         this.text = text;
-        this.data = data;
+        this.link = link;
     }
     @Override
     public String toString() {
-        return "<button id=\"" + data + "\">" + text + "</button>";
+        return "<button id=\"" + link + "\">" + text + "</button>";
     }
     public String getText() {
         return text;
@@ -20,12 +22,16 @@ public class MyButton {
         this.text = text;
     }
 
-    public String getData() {
-        return data;
+    public String getLink() {
+        return link;
     }
 
-    public void setData(String data) {
-        this.data = data;
+    public InlineKeyboardButton getInlineButton() {
+        return InlineKeyboardButton.builder().text(text).callbackData("" + link).build();
+    }
+
+    public void setData(String link) {
+        this.link = link;
     }
 
 }

@@ -1,6 +1,7 @@
 package core;
 
 import Viev.MyMessage;
+import Viev.Scenario;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -12,19 +13,24 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 public class Bot extends TelegramLongPollingBot {
     MyMessage startMessage;
     ArrayList<MyMessage> testScript = new ArrayList<>(7);
     public Bot() {
+        //initialize map
+
+        //test scenario
         InlineKeyboardButton startButton = InlineKeyboardButton.builder().text("Приступим")
                 .callbackData("START_MAIN").build();
         InlineKeyboardMarkup startKeyboard = InlineKeyboardMarkup.builder()
                 .keyboardRow(List.of(startButton)).build();
         startMessage = new MyMessage("Этот бот будет помогать людям чувствовать себя лучше, но пока он только в разработке",
-                "AgACAgIAAxkBAAM9Y0v-jJq4k63_faUuYIuuHFhi8nQAAtXBMRvcuGFKBKbfLkftw3cBAAMCAANzAAMqBA",
+                List.of("AgACAgIAAxkBAAM9Y0v-jJq4k63_faUuYIuuHFhi8nQAAtXBMRvcuGFKBKbfLkftw3cBAAMCAANzAAMqBA"),
                 startKeyboard);
 
         InlineKeyboardButton button1_1 = InlineKeyboardButton.builder().text("Вариант 1")
@@ -110,6 +116,7 @@ public class Bot extends TelegramLongPollingBot {
             if (update.getCallbackQuery().getData().equalsIgnoreCase("START_MAIN")) {
                 sendMessage(userId, testScript.get(0));
             } else {
+                replyToButton(userId, update.getCallbackQuery().getData());
                 try {
                     int index = Integer.parseInt(update.getCallbackQuery().getData()) - 1;
                     sendMessage(userId, testScript.get(index));
@@ -129,16 +136,24 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
+    private void replyToButton(Long userId, String buttonData) {
+
+    }
+
     public void sendMessage(Long who, MyMessage message) {
         if (message.hasPhoto()) {
-            SendPhoto sendPhoto = SendPhoto.builder().chatId(who.toString())
-                    .photo(new InputFile(message.getPhoto())).caption(message.getText())
-                    .replyMarkup(message.getKeyboard()).build();
-            try {
-                execute(sendPhoto);
-            } catch (TelegramApiException ex) {
-                Main.log(Level.WARNING, ex.getMessage());
-                throw new RuntimeException(ex);
+            List<String> photos = message.getPhoto();
+            for (String photo :
+                    photos) {
+                SendPhoto sendPhoto = SendPhoto.builder().chatId(who.toString())
+                        .photo(new InputFile(photo)).caption(message.getText())
+                        .replyMarkup(message.getKeyboard()).build();
+                try {
+                    execute(sendPhoto);
+                } catch (TelegramApiException ex) {
+                    Main.log(Level.WARNING, ex.getMessage());
+                    throw new RuntimeException(ex);
+                }
             }
         }
         else if (message.hasText()) {
@@ -153,6 +168,7 @@ public class Bot extends TelegramLongPollingBot {
             }
         }
     }
+
 
     public void sendPhoto(Long who) {
         var plusOne = InlineKeyboardButton.builder()
