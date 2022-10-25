@@ -1,7 +1,9 @@
 package core;
 
+import Viev.MyBlock;
 import Viev.MyMessage;
 import Viev.Scenario;
+import Viev.ScenarioException;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -12,6 +14,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -137,7 +140,20 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     private void replyToButton(Long userId, String buttonData) {
+        String[] split = buttonData.split(" ");
+        int scenarioId = Integer.parseInt(split[0]);
+        int blockId = Integer.parseInt(split[1]);
 
+        try {
+            Scenario scenario = DataMeneger.getScenario(scenarioId);
+            MyBlock block = scenario.getBlockWithId(blockId);
+
+            sendMessage(userId, block.getMyMessage());
+        } catch (SQLException e) {
+            Main.log(Level.WARNING, "Вызов сценария с несуществующим Id " + e.getMessage());
+        } catch (ScenarioException e) {
+            Main.log(Level.WARNING, "Запрос отсутствующего в сценарии блока " + e.getMessage());
+        }
     }
 
     public void sendMessage(Long who, MyMessage message) {
