@@ -19,36 +19,6 @@ public class MyBlock {
       this.buttons = buttons;
    }
 
-   public MyBlock(int id, String text, MyPhoto photo, MyButton button) {
-      this(id, new MyText(text), List.of(photo), List.of(button));
-   }
-
-   public MyBlock(int id, String text, List<MyPhoto> photo, List<MyButton> button) {
-      this(id, new MyText(text), photo, button);
-   }
-   public MyBlock(MyText text, List<MyPhoto> photos, List<MyButton> buttons) {
-      this.text = text;
-      this.photos = photos;
-      this.buttons = buttons;
-   }
-   public MyBlock(int link, MyText mt) {
-      this(link, mt, List.of(), List.of());
-   }
-
-   public MyBlock(int link, String mt) {
-      this(link, new MyText(mt), List.of(), List.of());
-   }
-   public MyBlock(int link, List<MyPhoto> photos) {
-      this(link, "", photos, List.of());
-   }
-   public MyBlock(MyText text, List<MyPhoto> photos) {
-      this(text, photos, List.of());
-
-   }
-
-   public MyBlock(List<MyPhoto> photos, List<MyButton> buttons) {
-      this(new MyText(""), photos, buttons);
-   }
 
    public MyMessage getMyMessage() {
       ArrayList<InlineKeyboardButton> but = new ArrayList<>();

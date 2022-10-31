@@ -3,6 +3,7 @@ package Viev;
 import java.util.List;
 
 public class Scenario {
+
     int id;
     List<MyBlock> blocks;
     SubTypes type;
@@ -36,5 +37,8 @@ public class Scenario {
         }
         builder.append("</scenario>");
         return builder.toString();
+    }
+    public int getId() {
+        return id;
     }
 }

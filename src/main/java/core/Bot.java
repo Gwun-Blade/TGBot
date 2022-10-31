@@ -1,24 +1,19 @@
 package core;
 
-import Viev.MyBlock;
-import Viev.MyMessage;
-import Viev.Scenario;
-import Viev.ScenarioException;
+import Viev.*;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 
 public class Bot extends TelegramLongPollingBot {
@@ -93,40 +88,34 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        Long userId;
+        System.out.println(update);
+        User user = new User();
         if (update.hasMessage()) {
             Main.log(Level.INFO, "Получено сообщение от: " + update.getMessage().getFrom() +
                     " " + update.getMessage().getFrom().getFirstName());
-            userId = update.getMessage().getFrom().getId();
+            user = update.getMessage().getFrom();
             if (update.getMessage().hasText()) {
                 Main.log(Level.INFO, "Сообщение содержит текст: " + update.getMessage().getText());
                 if (update.getMessage().getText().equalsIgnoreCase("/start")) {
-                    sendMessage(userId, startMessage);
+                    replyToButton(user.getId(), "3 1");
                 } else {
-                    sendMessage(userId, new MyMessage("Заглушка от неизвестного текста"));
+                    sendMessage(user.getId(), new MyMessage("Заглушка от неизвестного текста"));
                 }
             }
             if (update.getMessage().hasPhoto()) {
                 Main.log(Level.INFO, "Сообщение содержит фото + " + update.getMessage().getPhoto());
-                sendMessage(userId, new MyMessage("Заглушка от фото"));
+                sendMessage(user.getId(), new MyMessage("Заглушка от фото"));
             }
         } else if (update.hasCallbackQuery()) {
-            Main.log(Level.INFO, "Кнопка нажата, нажавший: " + update.getMessage().getFrom().getId() +
-                    " " + update.getMessage().getFrom().getFirstName());
+            Main.log(Level.INFO, "Кнопка нажата, нажавший: " + update.getCallbackQuery().getFrom().getId() +
+                    " " + update.getCallbackQuery().getFrom().getFirstName());
             Main.log(Level.INFO, "Данные кнопки: + " + update.getCallbackQuery().getId() + " "
                     +  update.getCallbackQuery().getData());
-            userId = update.getCallbackQuery().getFrom().getId();
+            user = update.getCallbackQuery().getFrom();
             if (update.getCallbackQuery().getData().equalsIgnoreCase("START_MAIN")) {
-                sendMessage(userId, testScript.get(0));
+                sendMessage(user.getId(), testScript.get(0));
             } else {
-                replyToButton(userId, update.getCallbackQuery().getData());
-                try {
-                    int index = Integer.parseInt(update.getCallbackQuery().getData()) - 1;
-                    sendMessage(userId, testScript.get(index));
-                } catch (NumberFormatException ex) {
-                    Main.log(Level.WARNING, ex.getMessage());
-                    throw new RuntimeException(ex);
-                }
+                replyToButton(user.getId(), update.getCallbackQuery().getData());
             }
             AnswerCallbackQuery close = AnswerCallbackQuery.builder()
                     .callbackQueryId(update.getCallbackQuery().getId()).build();
@@ -137,6 +126,8 @@ public class Bot extends TelegramLongPollingBot {
                 e.printStackTrace();
             }
         }
+        DataMeneger.writeUser(new MyUser(user.getId(), user.getFirstName(), user.getLastName(), user.getLanguageCode(),
+                SubTypes.none, new Date().toString(), 3, false));
     }
 
     private void replyToButton(Long userId, String buttonData) {
@@ -168,6 +159,7 @@ public class Bot extends TelegramLongPollingBot {
                     execute(sendPhoto);
                 } catch (TelegramApiException ex) {
                     Main.log(Level.WARNING, ex.getMessage());
+                    ex.printStackTrace();
                     throw new RuntimeException(ex);
                 }
             }
@@ -180,6 +172,7 @@ public class Bot extends TelegramLongPollingBot {
                 execute(sendMessage);
             } catch (TelegramApiException ex) {
                 Main.log(Level.WARNING, ex.getMessage());
+                ex.printStackTrace();
                 throw new RuntimeException(ex);
             }
         }
